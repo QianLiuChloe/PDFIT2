@@ -26,7 +26,7 @@ def visualize_text_boxes(pdf_path, output_folder="PDFIT2\TextExtraction\Output")
         
         output_path = os.path.join(output_folder, f"page_{page_number+1}.png")
         img.save(output_path)
-        print(f"已保存：{output_path}")
+        print(f"Saved：{output_path}")
 
 if __name__ == "__main__":
     pdf_file = "example.pdf"  
