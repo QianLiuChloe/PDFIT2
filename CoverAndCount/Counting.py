@@ -115,7 +115,7 @@ def finish(event):
     plt.close()
 
 fig, ax = plt.subplots()
-plt.subplots_adjust(bottom=0.2)  # 为按钮预留空间
+plt.subplots_adjust(bottom=0.2)  
 ax.imshow(img)
 ax.set_title("Drag the mouse to select the area (you can select multiple areas), and click Finish to end the selection.")
 toggle_selector = RectangleSelector(ax, onselect, useblit=True,
@@ -128,7 +128,7 @@ btn_finish.on_clicked(finish)
 plt.show()
 
 if not rects:
-    print("未选择任何区域，程序退出。")
+    print("No region is selected and the program exits.")
     exit(0)
 
 # ------------------------- Area Transfer -------------------------
@@ -141,7 +141,7 @@ for r in rects:
     y_max_pdf = r['y_max'] / zoom
     pdf_rect = fitz.Rect(x_min_pdf, y_min_pdf, x_max_pdf, y_max_pdf)
     pdf_rects.append(pdf_rect)
-    print("转换后的 PDF 选区坐标：", pdf_rect)
+    print("The converted PDF selection coordinates:", pdf_rect)
 
 # ------------------------- The converted PDF selection coordinates: -------------------------
 # Get all the words in the page, in the format (x0, y0, x1, y1, text, ...)
@@ -161,11 +161,11 @@ for word in words:
             coord = word[:4]
             if not is_close(coord, dedup_occurrences[label], DEDUP_THRESHOLD):
                 dedup_occurrences[label].append(coord)
-                print(f"识别到标签 {label}，原始坐标 {coord}，中心 {center(coord)}")
+                print(f"Label {label}，Original coordinates {coord}，Center{center(coord)}")
             break  # 每个 word 只计入一个区域
 
 label_counts = {label: len(coords) for label, coords in dedup_occurrences.items()}
-print("文字标签统计结果：", label_counts)
+print("Element counting Result：", label_counts)
 
 # ------------------------- Generate preview image-------------------------
 
