@@ -27,5 +27,5 @@ def extract_images(pdf_path, output_folder="PDFIT2\ImageExtraction\ExtractedImag
     print(f"Number of Images: {image_count} 。")
 
 if __name__ == "__main__":
-    pdf_file = "example.pdf"  
+    pdf_file = "3.pdf"  
     extract_images(pdf_file)

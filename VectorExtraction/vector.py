@@ -50,5 +50,5 @@ def visualize_pdf_elements(pdf_path, output_folder="VectorExtraction/Output"):
         print(f"已保存：{output_path}")
 
 if __name__ == "__main__":
-    pdf_file = "1.pdf"  # 请替换为你的 PDF 文件路径
+    pdf_file = "3.pdf"  # 请替换为你的 PDF 文件路径
     visualize_pdf_elements(pdf_file)

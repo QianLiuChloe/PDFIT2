@@ -210,6 +210,7 @@ for cr in cover_rects:
     print(cr)
 
 # 对每个补集区域添加 redaction 注释，并用白色填充覆盖
+
 for cr in cover_rects:
     page.add_redact_annot(cr, fill=(1, 1, 1))
 page.apply_redactions()

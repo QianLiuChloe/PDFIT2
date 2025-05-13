@@ -29,5 +29,5 @@ def visualize_text_boxes(pdf_path, output_folder="Output"):
         print(f"Saved：{output_path}")
 
 if __name__ == "__main__":
-    pdf_file = "1.pdf"  
+    pdf_file = "2.pdf"  
     visualize_text_boxes(pdf_file)
