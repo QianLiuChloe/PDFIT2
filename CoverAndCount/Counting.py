@@ -43,20 +43,20 @@ def subtract_rect(base, sub):
     Both are fitz.Rect objects
     """
     result = []
-    # 如果不相交，返回原矩形
+
     if not base.intersects(sub):
         return [base]
-    inter = base & sub  # 求交集
-    # 上部区域（base 上边到交集上边）
+    inter = base & sub  
+ 
     if inter.y0 > base.y0:
         result.append(fitz.Rect(base.x0, base.y0, base.x1, inter.y0))
-    # 下部区域（交集下边到 base 下边）
+
     if inter.y1 < base.y1:
         result.append(fitz.Rect(base.x0, inter.y1, base.x1, base.y1))
-    # 左侧区域（base 左边到交集左边，在交集的垂直范围内）
+
     if inter.x0 > base.x0:
         result.append(fitz.Rect(base.x0, inter.y0, inter.x0, inter.y1))
-    # 右侧区域（交集右边到 base 右边，在交集的垂直范围内）
+
     if inter.x1 < base.x1:
         result.append(fitz.Rect(inter.x1, inter.y0, base.x1, inter.y1))
     return result
@@ -73,7 +73,7 @@ def subtract_rects(full_rect, sub_rects):
         covers = new_covers
     return covers
 
-# ------------------------- Interactive area selection -------------------------
+
 pdf_path = input("Please enter the PDF file path：").strip()
 if not os.path.exists(pdf_path):
     print("The file does not exist!")
@@ -82,13 +82,13 @@ if not os.path.exists(pdf_path):
 doc = fitz.open(pdf_path)
 page = doc[0]  
 
-# 渲染页面为图像（numpy 数组），便于交互式选择
+
 pix = page.get_pixmap(matrix=mat)
 img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
 if pix.n == 4:
-    img = img[..., :3]  # 忽略 alpha 通道
+    img = img[..., :3]  
 
-# 用于存储用户选取的所有矩形区域（图像坐标）
+
 rects = []
 
 def onselect(eclick, erelease):
@@ -147,7 +147,7 @@ for r in rects:
 # Get all the words in the page, in the format (x0, y0, x1, y1, text, ...)
 words = page.get_text("words")
 
-# dedup_occurrences：字典，key 为文字标签，value 为该标签在选区内唯一出现的 bounding boxes（PDF 坐标）
+
 dedup_occurrences = {}
 
 for word in words:
@@ -162,7 +162,7 @@ for word in words:
             if not is_close(coord, dedup_occurrences[label], DEDUP_THRESHOLD):
                 dedup_occurrences[label].append(coord)
                 print(f"Label {label}，Original coordinates {coord}，Center{center(coord)}")
-            break  # 每个 word 只计入一个区域
+            break  
 
 label_counts = {label: len(coords) for label, coords in dedup_occurrences.items()}
 print("Element counting Result：", label_counts)
@@ -173,9 +173,8 @@ unique_labels = list(dedup_occurrences.keys())
 colors = {}
 cmap = plt.get_cmap("tab10")
 for i, label in enumerate(unique_labels):
-    colors[label] = cmap(i % 10)  # RGBA，值域 [0,1]
+    colors[label] = cmap(i % 10) 
 
-# 使用 PIL 在原始预览图上绘制各标签的边框和文字
 pil_img = Image.fromarray(img)
 draw = ImageDraw.Draw(pil_img)
 try:
@@ -183,9 +182,9 @@ try:
 except IOError:
     font = ImageFont.load_default()
 
-# 注意：words 的坐标为 PDF 坐标，乘以 zoom 后对应预览图坐标
+
 for label, boxes in dedup_occurrences.items():
-    # 将颜色转换为 0-255 的 RGB 元组
+   
     color = tuple(int(255 * x) for x in colors[label][:3])
     for box in boxes:
         x0 = box[0] * zoom
@@ -195,21 +194,18 @@ for label, boxes in dedup_occurrences.items():
         draw.rectangle([x0, y0, x1, y1], outline=color, width=2)
         draw.text((x0, y0), label, fill=color, font=font)
 
-preview_image_path = "count_preview.png"  #PNG output
+preview_image_path = "count_preview.png" 
 pil_img.save(preview_image_path)
 print("The count preview is saved as:", preview_image_path)
 
-# ------------------------- PDF overlay processing (overlaying the parts outside the selection) -------------------------
-# 计算整页区域（页面坐标）
+
 full_page = page.rect
 
-# 计算补集区域：整页减去所有用户选取的区域
+
 cover_rects = subtract_rects(full_page, pdf_rects)
 print("The area that needs to be covered (the complementary area)")
 for cr in cover_rects:
     print(cr)
-
-# 对每个补集区域添加 redaction 注释，并用白色填充覆盖
 
 for cr in cover_rects:
     page.add_redact_annot(cr, fill=(1, 1, 1))
